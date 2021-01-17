@@ -26,16 +26,34 @@ var firebaseConfig = {
 
 
 
-function getData() { firebase.database().ref("/"+room_name).on('value', function(snapshot) {
+function getData() { firebase.database().ref("/"+roomname).on('value', function(snapshot) {
        document.getElementById("output").innerHTML = ""; snapshot.forEach(function(childSnapshot) 
        { childKey  = childSnapshot.key; childData = childSnapshot.val(); if(childKey != "purpose") {
          firebase_message_id = childKey;
          message_data = childData;
 //Start code
-
+console.log(firebase_message_id);
+console.log(message_data);
+sendername=message_data["name"];
+message=message_data["message"];
+likes=message_data["like"];
+h4tag="<h4>"+sendername+"<img class='user_tick' src='tick.png'></h4>";
+messagetag="<h4 class='message_h4'>"+message+"</h4>";
+likebutton="<button class='btn btn-warning' id="+firebase_message_id+" value="+likes+" onclick='updatelike(this.id)'>";
+spantag="<span class='glyphicon glyphicon-thumbs-up'>Like:"+likes+"</span></button><hr>";
+row=h4tag+messagetag+likebutton+spantag;
+document.getElementById("output").innerHTML+=row;
 //End code
       } });  }); }
 getData();
+
+function updatelike(msg_id) {
+      console.log("clicked on likebutton in "+msg_id);
+      newlikes=document.getElementById(msg_id).value;
+      updatedlikes=Number(newlikes)+1;
+      console.log(updatedlikes);
+      firebase.database().ref(roomname).child(msg_id).update({like:updatedlikes});
+}
 
 function logout() {
       localStorage.removeItem("user_namekey");
